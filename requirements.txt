@@ -1,0 +1,6 @@
+aiogram~=3.13.1
+SQLAlchemy==2.0.23
+asyncpg==0.29.0
+APScheduler~=3.10.4
+aiohttp~=3.9.5
+aiofiles~=24.1.0
