@@ -16,24 +16,14 @@ class Repo:
         self.session = session
 
     async def add_user(self, user_id: int, username: str) -> bool:
-        """
-        Добавляет нового пользователя в базу данных, если его там еще нет.
-
-        Args:
-            user_id: ID пользователя.
-            username: Имя пользователя.
-
-        Returns:
-            True, если пользователь был успешно добавлен, False в противном случае.
-        """
-
-        # Проверяем, существует ли пользователь, используя EXISTS для оптимизации
-        exists_statement = select(User).where(User.user_id == user_id).exists()
-        user_exists = await self.session.scalar(exists_statement)
-
-        if not user_exists:
-            new_user = User(user_id=user_id, username=username)
-            self.session.add(new_user)
+        statement = select(User).where(User.user_id == user_id)
+        new_user = True if await self.session.scalar(statement) is None else False
+        if new_user:
+            new_user_add = User(
+                user_id=user_id,
+                username=username
+            )
+            self.session.add(new_user_add)
             await self.session.commit()
             return True
         return False
