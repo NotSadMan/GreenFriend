@@ -36,7 +36,8 @@ class Repo:
             Список ID пользователей.
         """
         statement = select(User.user_id)
-        return await self.session.scalars(statement).all()
+        users = await self.session.scalars(statement)
+        return users.all()
 
     async def get_user(self, user_id: int) -> User | None:
         """
@@ -115,7 +116,8 @@ class Repo:
             Список объектов Plant.
         """
         statement = select(Plant).where(Plant.user_id == user_id)
-        return await self.session.scalars(statement).all()
+        plants = await self.session.scalars(statement)
+        return plants.all()
 
     async def change_notifications(self, plant_id: int, notifications_enabled: bool) -> bool:
         """
