@@ -21,7 +21,7 @@ async def plant_info(callback: types.CallbackQuery, repo: Repo):
     plant = await repo.get_plant(plant_id)
     await callback.message.answer_photo(photo=plant.plant_photo, caption=f"<b>Растение: {plant.plant_name}</b>"
                                                              f"\n\nПолив: раз в {plant.watering_frequency} дней"
-                                                             f"\nПоследнее полив: {plant.last_watered.strftime('%d.%m.%Y')}",
+                                                             f"\nПоследний полив: {plant.last_watered.strftime('%d.%m.%Y')}",
                                         reply_markup=await inl_kb.plant_menu(plant_id, plant.notifications_enabled))
 
 async def notifications(callback: types.CallbackQuery, repo: Repo):
@@ -30,10 +30,10 @@ async def notifications(callback: types.CallbackQuery, repo: Repo):
     plant = await repo.get_plant(plant_id)
     status = not plant.notifications_enabled
     await repo.change_notifications(plant_id, status)
-    await toggle_notifications(callback.from_user.id, plant_id, status, callback)
-    await callback.message.answer(f"<b>Растение: {plant.plant_name}</b>"
+    await toggle_notifications(callback.from_user.id, plant.plant_name, plant.watering_frequency, status, callback)
+    await callback.message.edit_caption(caption=f"<b>Растение: {plant.plant_name}</b>"
                                   f"\n\nПолив: раз в {plant.watering_frequency} дней"
-                                  f"\nПоследнее полив: {plant.last_watered.strftime('%d.%m.%Y')}",
+                                  f"\nПоследний полив: {plant.last_watered.strftime('%d.%m.%Y')}",
                                   reply_markup=await inl_kb.plant_menu(plant_id, status))
 
 
@@ -48,5 +48,5 @@ async def plant_delete(callback: types.CallbackQuery, repo: Repo):
 def register_handlers():
     router.message.register(my_plants, F.text == 'Мои растения')
     router.callback_query.register(plant_info, F.data.startswith('plant:'))
-    router.callback_query.register(notifications, F.data.startswith == 'notifications')
-    router.callback_query.register(plant_delete, F.data.startswith == 'delete_plant:')
+    router.callback_query.register(notifications, F.data.startswith('notifications:'))
+    router.callback_query.register(plant_delete, F.data.startswith('delete_plant:'))

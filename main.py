@@ -12,9 +12,9 @@ from aiogram.client.default import DefaultBotProperties
 
 from bot.middlewares.db import DBMiddleware
 from config import load_config
-
+from bot.services.scheduler import scheduler
 logger = logging.getLogger(__name__)
-scheduler = AsyncIOScheduler()
+
 
 
 
@@ -29,6 +29,7 @@ async def main():
     router = setup_routers()
 
     bot = Bot(token=config['bot']['token'], default=DefaultBotProperties(parse_mode="HTML"))
+    scheduler.start()
     dp = Dispatcher(config=config)
     dp.include_routers(router)
 

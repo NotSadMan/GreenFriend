@@ -1,13 +1,13 @@
 from datetime import datetime, timedelta
 
-from main import scheduler
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.interval import IntervalTrigger
 
+scheduler = AsyncIOScheduler()
 tasks = {}
 
 async def send_reminder(user_id: int, plant_name: str, context):
   """Отправляет пользователю напоминание о поливе растения."""
-  print(f"Напоминание: Полейте {plant_name}!")
   await context.bot.send_message(chat_id=user_id, text=f"<b>Напоминание: Полейте {plant_name}!</b>")
 
 
@@ -19,10 +19,10 @@ def schedule_reminders(user_id: int, plant_name: str, frequency: int, context):
 
   job = scheduler.add_job(
     send_reminder,
-    trigger=IntervalTrigger(days=frequency),
+    "interval",
+    days=frequency,
     args=[user_id, plant_name, context],
     id=job_id,
-    # Устанавливаем первое срабатывание через frequency дней
     next_run_time=datetime.now() + timedelta(days=frequency)
   )
   tasks[job_id] = job
