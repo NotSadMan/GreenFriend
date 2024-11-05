@@ -1,6 +1,8 @@
 import aiohttp
 import asyncio
 import aiofiles
+from aiohttp import ClientTimeout
+
 
 async def upload_image(session: aiohttp.ClientSession, image_path: str) -> str:
     """Загружает изображение и возвращает его ID."""
@@ -52,7 +54,7 @@ async def get_plant_info(session: aiohttp.ClientSession, species_name: str, auth
 
 async def identify_plant_from_image(image_path: str) -> dict:
     """Идентифицирует растение по изображению и возвращает информацию о нем."""
-    async with aiohttp.ClientSession() as session:
+    async with aiohttp.ClientSession(timeout=ClientTimeout(total=10)) as session:
         image_id = await upload_image(session, image_path)
         image_url = f"https://bs.plantnet.org/v1/image/o/{image_id}"
         json_answer = await identify_plant(session, image_url)

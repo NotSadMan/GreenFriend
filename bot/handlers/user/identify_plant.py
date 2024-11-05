@@ -6,6 +6,7 @@ import os
 import bot.keyboards.reply_user as repl_kb
 from bot.states.state import Plant
 from bot.services.identify_api import identify_plant_from_image
+from main import logger
 
 router = Router()
 
@@ -27,7 +28,8 @@ async def photo_for_identification(message: types.Message, state: FSMContext):
         plant_info = await identify_plant_from_image(photo_path)
     except Exception as e:
         await message.answer("<b>Произошла ошибка при идентификации растения.</b>")
-        print(f"Ошибка при идентификации растения: {e}")
+        logger.error(f"Ошибка при идентификации растения: {e}")
+        os.remove(photo_path)
         return
     result_message = format_plant_info(plant_info)
     await message.answer(result_message, reply_markup=repl_kb.user_menu)
